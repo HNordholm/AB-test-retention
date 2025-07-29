@@ -1,0 +1,82 @@
+---
+title: "A/B test: Mobile game"
+Subtitle: "Day 1 retention"
+author: "Hampus Nordholm"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+
+#Loading data -- 
+source("scripts/load_data.R")
+source("ab_function/AB_function.R")
+```
+
+# Objective 
+
+Evaluate the effect of increasing the level gate from level 30 to 40 on Day 1 user retention in a mobile game. The test design follows a randomized controlled trial. A required sample size of 9,712 users per group, with a minimum detectable effect (MDE) of 2%, was determined and fulfilled according to power analysis.
+
+# Sample sanity check 
+
+Test if group assignment is balanced.
+
+```{r}
+chisq.test(table(ab_tbl$version))
+```
+
+The chi-squared test indicates a statistically significant imbalance between group sizes (p < 0.01). Although assignment was randomized, the observed difference may be due to sampling variability. 
+
+# A/B test results 
+
+Two-sample test for difference in retention proportions.
+
+**Null hypothesis:** There is no significant difference in DAY 1 retention rate between gate 30 and gate 40.  
+
+**Alternative hypothesis:** There is a statistically significant difference in retention rate between gate 30 and gate 40.
+
+```{r}
+AB_prop_test(ab_tbl, version, retention_1)
+```
+
+**P-value > 0.05**
+
+Null hypothesis can not be rejected:
+
+**There is no statistically significant difference in retention rate at the 5% level.**
+
+# Logistic regression 
+
+```{r}
+reg_tbl <- ab_tbl %>% 
+  mutate(retention_1 = factor(retention_1),
+         version = factor(version))
+
+reg_results <-  glm(retention_1 ~ version + gamerounds, reg_tbl, family = "binomial")
+
+summary(reg_results)
+```
+
+**The odds of retention for gate_40 are ~3% lower compared to gate_30, controlling for number of rounds. Effect is statistical significant on the 5% level.**
+
+## Retention rate between versions 
+
+![Day-1 Retention](plots/rate_day1.png)
+
+# Conclusion
+
+The two-proportion test did not detect a statistically significant difference in day 1 retention between the two groups (p = 0.0755). However, when adjusting for gameplay behavior using logistic regression, the treatment group (`gate_40`) showed a small but statistically significant decrease in retention odds compared to the control.
+
+This suggests that retention differences are not visible at the aggregate level, but become evident when accounting for user engagement. While the absolute effect is modest (~3% lower odds), the result is consistent and statistically supported.
+
+Given the imbalance in group sizes, and the borderline result in the unadjusted test, findings should be interpreted with some caution. Further validation is recommended using longer-term retention or downstream metrics.
+
+
+
+
+
+
+
+
