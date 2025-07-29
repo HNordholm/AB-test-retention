@@ -25,8 +25,15 @@ Users in `gate_40` have approximately 3% lower odds of retaining on day 1 compar
 
 ## Project structure
 ```
-scripts/ # SQL connection, data cleaning, sanity checks, AB test 
-AB_function/ # Reusable A/B testing function
-plots/ # Visualizations 
-analysis/ # Project report 
+scripts/ 
+# SQL connection, data cleaning, sanity checks, AB test 
+
+AB_function/ 
+# Reusable A/B testing function
+
+plots/ 
+# Visualizations 
+
+analysis/ 
+Project report 
 ```
