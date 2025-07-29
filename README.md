@@ -2,6 +2,10 @@
 
 This repository contains an A/B test evaluating whether moving a level gate from level 30 to level 40 affects user retention on day 1. Data is loaded from a local SQL Server instance and analyzed in R.
 
+## Report
+
+📄 [View full A/B test report (HTML)](analysis/ABreport.html)
+
 ## Summary
 
 - **Design**: Randomized controlled trial (RCT)
