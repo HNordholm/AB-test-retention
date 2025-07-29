@@ -21,3 +21,4 @@ ab_tbl  <- dbGetQuery(SSMS_connection, "SELECT userid, version,
                       gamerounds, retention_1 FROM ab_data")
 ab_tbl <- as_tibble(ab_tbl)
 
+dbDisconnect(SSMS_connection)
