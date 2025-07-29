@@ -1,11 +1,9 @@
 ---
 title: "A/B test: Mobile game"
-subtitle: "Day 1 retention"
+Subtitle: "Day 1 retention"
 author: "Hampus Nordholm"
 date: "`r Sys.Date()`"
-output: 
-  pdf_document:
-    latex_engine: xelatex 
+output: HTML_document 
 ---
 
 ```{r setup, include=FALSE}
@@ -13,8 +11,8 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 
 #Loading data -- 
-ab_tbl <- read_csv("cookie_cats.csv") %>% 
-  rename(gamerounds = sum_gamerounds)
+source("scripts/load_data.R")
+source("ab_function/AB_function.R")
 ```
 
 # Objective 
@@ -40,26 +38,6 @@ Two-sample test for difference in retention proportions.
 **Alternative hypothesis:** There is a statistically significant difference in retention rate between gate 30 and gate 40.
 
 ```{r}
-AB_prop_test <- function(df, version_col, outcome_col) 
-{library(dplyr)
-  
-  version_sym <- rlang::ensym(version_col)
-  outcome_sym <- rlang::ensym(outcome_col)
-  
-    ab_summary <- df %>%
-    group_by(!!version_sym) %>%
-    summarise(
-      retained = sum(!!outcome_sym == TRUE),
-      total = n(),
-      .groups = "drop")
-    
-test <- prop.test(x=ab_summary$retained,n=ab_summary$total)
-  cat("\n📊 AB-test: Proportiontest\n")
-  print(ab_summary)
-  cat("\n---\n")
-  print(test)
-  invisible(list(summary = ab_summary, test = test))}
-
 AB_prop_test(ab_tbl, version, retention_1)
 ```
 
@@ -75,10 +53,6 @@ Null hypothesis can not be rejected:
 reg_tbl <- ab_tbl %>% 
   mutate(retention_1 = factor(retention_1),
          version = factor(version))
-```
-
-
-```{r}
 
 reg_results <-  glm(retention_1 ~ version + gamerounds, reg_tbl, family = "binomial")
 
